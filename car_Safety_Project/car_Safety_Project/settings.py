@@ -38,10 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'car_Safety',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -69,6 +72,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'car_Safety_Project.wsgi.application'
+
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3000',
+)
 
 
 # Database
