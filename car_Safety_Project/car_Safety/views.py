@@ -107,16 +107,44 @@ def get_trims(request):
 def get_vehicle_info(request):
 	if request.method == 'POST':
 
-		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/VehicleId/{}?format=json'.format(request.POST['vehicleid']))
+		response_nhtsa_info = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/VehicleId/{}?format=json'.format(request.POST['vehicleid']))
 
-		response_json = fetch_response.json()
+		response_nhtsa_info_json = response_nhtsa_info.json()
 
-		print(response_json)
+		response_nhtsa_recall = requests.get('https://one.nhtsa.gov/webapi/api/Recalls/vehicle/modelyear/{}/make/{}/model/{}?format=json'.format(response_nhtsa_info_json['Results'][0]['ModelYear'], response_nhtsa_info_json['Results'][0]['Make'], response_nhtsa_info_json['Results'][0]['Model']))
 
-		return JsonResponse({'status': 200, 'data': response_json['Results']})
+		response_nhtsa_recall_json = response_nhtsa_recall.json()
+
+		print(response_nhtsa_info_json['Results'][0]['ModelYear'], response_nhtsa_info_json['Results'][0]['Make'])
+
+
+
+		response_iihs_vehicle_series = requests.get('https://api.iihs.org/V4/ratings/series/{}/{}?apikey=uZBIc3DS8k6evZTw62xttB2dkklf-3ZCqVRpT6CCKP4&format=json'.format(response_nhtsa_info_json['Results'][0]['ModelYear'], response_nhtsa_info_json['Results'][0]['Make'].lower()))
+
+
+		response_iihs_vehicle_series_json = response_iihs_vehicle_series.json()
+
+		for i in range(0, len(response_iihs_vehicle_series_json)):
+			index = response_iihs_vehicle_series_json[i]['name'].find(response_nhtsa_info_json['Results'][0]['Model'])
+			if index >= 0:
+				name_of_vehicle = response_iihs_vehicle_series_json[i]['slug']
+
+
+
+		response_iihs_info = requests.get('https://api.iihs.org/V4/ratings/single/{}/{}/{}/?apikey=uZBIc3DS8k6evZTw62xttB2dkklf-3ZCqVRpT6CCKP4&format=json'.format(response_nhtsa_info_json['Results'][0]['ModelYear'], response_nhtsa_info_json['Results'][0]['Make'].lower(), name_of_vehicle))
+
+		response_iihs_info_json = response_iihs_info.json()
+
+
+
+
+		return JsonResponse({'status': 200, 'data': 'POSTED'})
 
 	else:
 		return JsonResponse({'status': 400, 'data': 'Cannot POST to /vehicleinfo'}) 
+
+
+
 
 
 
