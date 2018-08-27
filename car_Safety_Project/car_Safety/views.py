@@ -66,7 +66,16 @@ def get_makes(request):
 def get_models(request):
 	if request.method == 'POST':
 
-		return JsonResponse({'status': 200, 'data': 'POSTED'})
+		response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}/make/{}?format=json'.format(request.POST['year'], request.POST['make']))
+
+		response_json = response.json()
+
+		def response(x):
+			return x['Model']
+
+		makes = list(map(response, response_json['Results']))
+
+		return JsonResponse({'status': 200, 'data': makes})
 
 	else:
 		return JsonResponse({'status': 400, 'data': 'Cannot POST to /models'})
