@@ -7,6 +7,7 @@ class Car(models.Model):
 	model_year = models.IntegerField()
 	make = models.CharField(max_length=32)
 	model = models.CharField(max_length=32)
+	safety_score = models.CharField(max_length=8, default='00')
 	vehicle_id = models.IntegerField()
 	vehicle_description = models.CharField(max_length=64)
 	overall_rating = models.CharField(max_length=4)
