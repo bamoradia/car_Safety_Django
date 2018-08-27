@@ -35,14 +35,41 @@ def get_model_years(request):
 
 		return JsonResponse({'status': 200, 'data': years})
 	else: 
-		return JsonResponse('status': 400, 'data': 'Cannot Get')
+		return JsonResponse({'status': 400, 'data': 'Cannot GET /modelyears'})
 
 
+# return a list of all the makes that were tested for the given year
+# Must include a year in the request body
+@csrf_exempt
 def get_makes(request):
 	if request.method == 'POST':
-		return JsonResponse('POSTED')
+		print(request.POST['year'])
+
+		response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}?format=json'.format(request.POST['year']))
+
+		response_json = response.json()
+
+		def response(x):
+			return x['Make']
+
+		makes = list(map(response, response_json['Results']))
+
+
+		return JsonResponse({'status': 200, 'data': makes})
 	else: 
-		return JsonResponse('status': 400, 'data': 'Cannot Post')
+		return JsonResponse({'status': 400, 'data': 'Cannot POST to /makes'})
+
+
+# return a list of all models based on model year and make
+# Must include model year and make in the request body
+@csrf_exempt
+def get_models(request):
+	if request.method == 'POST':
+
+		return JsonResponse({'status': 200, 'data': 'POSTED'})
+
+	else:
+		return JsonResponse({'status': 400, 'data': 'Cannot POST to /models'})
 
 
 
@@ -60,4 +87,4 @@ def get_makes(request):
 
 
 
-		
+
