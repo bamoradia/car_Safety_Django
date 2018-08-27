@@ -45,9 +45,9 @@ def get_makes(request):
 	if request.method == 'POST':
 		print(request.POST['year'])
 
-		response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}?format=json'.format(request.POST['year']))
+		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}?format=json'.format(request.POST['year']))
 
-		response_json = response.json()
+		response_json = fetch_response.json()
 
 		def response(x):
 			return x['Make']
@@ -66,9 +66,9 @@ def get_makes(request):
 def get_models(request):
 	if request.method == 'POST':
 
-		response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}/make/{}?format=json'.format(request.POST['year'], request.POST['make']))
+		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}/make/{}?format=json'.format(request.POST['year'], request.POST['make']))
 
-		response_json = response.json()
+		response_json = fetch_response.json()
 
 		def response(x):
 			return x['Model']
@@ -81,10 +81,24 @@ def get_models(request):
 		return JsonResponse({'status': 400, 'data': 'Cannot POST to /models'})
 
 
+# return a list of all trims associated with the model year, make, and model
+# Must include model year, make, and model in request body
+@csrf_exempt
+def get_trims(request):
+	if request.method == 'POST':
 
+		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}/make/{}/model/{}?format=json'.format(request.POST['year'], request.POST['make'], request.POST['model']))
 
+		response_json = fetch_response.json()
 
+		def response(x):
+			return {'trim': x['VehicleDescription'], 'vehicle_id': x['VehicleId']}
 
+		trims = list(map(response, response_json['Results']))
+
+		return JsonResponse({'status': 200, 'data': trims})
+	else: 
+		return JsonResponse({'status': 400, 'data': 'Cannot POST to /trims'}) 
 
 
 
