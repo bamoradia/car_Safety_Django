@@ -19,6 +19,7 @@ class Car(models.Model):
 	side_crash_passengerside_rating = models.CharField(max_length=4)
 	rollover_rating = models.CharField(max_length=4)
 	side_pole_crash_rating = models.CharField(max_length=4)
+	complaints = models.CharField(max_length=8, default='0')
 
 
 
