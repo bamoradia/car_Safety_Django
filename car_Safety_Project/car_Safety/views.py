@@ -101,6 +101,24 @@ def get_trims(request):
 		return JsonResponse({'status': 400, 'data': 'Cannot POST to /trims'}) 
 
 
+# return all the information about a specific vehicle
+# must include the vehicle id in the request body
+@csrf_exempt
+def get_vehicle_info(request):
+	if request.method == 'POST':
+
+		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/VehicleId/{}?format=json'.format(request.POST['vehicleid']))
+
+		response_json = fetch_response.json()
+
+		print(response_json)
+
+		return JsonResponse({'status': 200, 'data': response_json['Results']})
+
+	else:
+		return JsonResponse({'status': 400, 'data': 'Cannot POST to /vehicleinfo'}) 
+
+
 
 
 

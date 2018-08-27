@@ -7,4 +7,5 @@ urlpatterns = [
 	path('api/v1/makes', views.get_makes, name='get_makes'),
 	path('api/v1/models', views.get_models, name='get_models'),
 	path('api/v1/trims', views.get_trims, name='get_trims'),
+	path('api/v1/vehicleinfo', views.get_vehicle_info, name='get_vehicle_info'),
 ]
