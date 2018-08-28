@@ -6,7 +6,6 @@ from django.core import serializers
 import requests
 import json
 
-# Create your views here.
 
 #returns the top ten cars with the highest aggregate score (cars which are already in the database)
 def top_ten_list(request):
@@ -296,9 +295,6 @@ def get_vehicle_info(request):
 			# -------------------SAVING RECALL MODEL---------------------- #
 			# -------------------SAVING IIHS MODEL------------------------ #
 
-
-			################################################################
-			# Need to update to check if each test has been performed and save different actions based on that
 			# Save only the data set which has is_primary as true
 			iihs = IIHS(
 					car= car_instance,
@@ -316,6 +312,7 @@ def get_vehicle_info(request):
 			if iihs_info_json[0]['topSafetyPick'] == None:
 				iihs.top_safety_pick= None
 				iihs.tsp_year= None
+				iihs.tsp_is_qualified= None
 				iihs.tsp_built_after= None
 				iihs.tsp_qualifying_text= None
 
@@ -434,7 +431,6 @@ def get_vehicle_info(request):
 						iihs.fcpr_rating_text= iihs_info_json[0]['frontCrashPreventionRatings'][0]['overallRating']['ratingText']
 
 			iihs.save()
-
 
 
 			# -------------------SAVING IIHS MODEL------------------------ #

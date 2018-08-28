@@ -43,7 +43,7 @@ class Recall(models.Model):
 
 
 	def __str__(self):
-		return self.car.vehicle_description
+		return '{}, {}'.format(self.car.vehicle_description, self.component)
 
 
 
