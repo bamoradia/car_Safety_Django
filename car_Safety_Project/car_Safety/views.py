@@ -155,8 +155,10 @@ def get_models(request):
 @csrf_exempt
 def get_trims(request):
 	if request.method == 'POST':
+
+		parsedData = json.loads(request.body)
 		# make a request to nhtsa to get all the trims associated with a model year, make and model
-		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}/make/{}/model/{}?format=json'.format(request.POST['year'], request.POST['make'], request.POST['model']))
+		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}/make/{}/model/{}?format=json'.format(parsedData['year'], parsedData['make'], parsedData['model']))
 
 		response_json = fetch_response.json()
 		# return the model trim name and the vehicle id
@@ -189,13 +191,14 @@ def get_trims(request):
 def get_vehicle_info(request):
 	if request.method == 'POST':
 
+		parsedData = json.loads(request.body)
 		# check if vehicle exists in the database
-		car_nhtsa = Car.objects.filter(vehicle_id=int(request.POST['vehicleid'])).exists()
+		car_nhtsa = Car.objects.filter(vehicle_id=int(parsedData['vehicleid'])).exists()
 
 		if not car_nhtsa:
 			# this happens if the vehicle is not in the database
 			# make first request to nhtsa to get information about specific model
-			response_nhtsa_info = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/VehicleId/{}?format=json'.format(request.POST['vehicleid']))
+			response_nhtsa_info = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/VehicleId/{}?format=json'.format(parsedData['vehicleid']))
 
 			nhtsa_info_json = response_nhtsa_info.json()
 
@@ -212,7 +215,9 @@ def get_vehicle_info(request):
 
 			# search the models returned to match model name from nhtsa
 			for i in range(0, len(iihs_vehicle_series_json)):
-				index = iihs_vehicle_series_json[i]['name'].find(nhtsa_info_json['Results'][0]['Model'])
+				iihs_name = iihs_vehicle_series_json[i]['name'].lower()
+				nhtsa_name = nhtsa_info_json['Results'][0]['Model'].lower()
+				index = iihs_name.find(nhtsa_name)
 				if index >= 0:
 					# if match is found, save slug name (which is used to make next request)
 					name_of_vehicle = iihs_vehicle_series_json[i]['slug']
@@ -450,7 +455,7 @@ def get_vehicle_info(request):
 
 
 		else: 
-			car_nhtsa = Car.objects.get(vehicle_id=int(request.POST['vehicleid']))
+			car_nhtsa = Car.objects.get(vehicle_id=int(parsedData['vehicleid']))
 			# vehicle was found in the database
 			iihs = IIHS.objects.get(car=car_nhtsa)
 			recall = Recall.objects.filter(car=car_nhtsa)
