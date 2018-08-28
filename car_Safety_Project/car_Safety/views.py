@@ -58,8 +58,6 @@ def get_model_years(request):
 		# make a new list that only contains the years
 		years = list(map(response, response_json['Results']))
 
-		print(years)
-
 		return JsonResponse({'status': 200, 'data': years})
 	else: 
 		return JsonResponse({'status': 400, 'data': 'Cannot GET /modelyears'})
@@ -84,7 +82,10 @@ def get_model_years(request):
 def get_makes(request):
 	if request.method == 'POST':
 		# make request to nhtsa to find all makes assiciated with a specific model year
-		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}?format=json'.format(request.POST['year']))
+
+		parsedData = json.loads(request.body)
+
+		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}?format=json'.format(parsedData['year']))
 
 		response_json = fetch_response.json()
 
@@ -95,7 +96,7 @@ def get_makes(request):
 		makes = list(map(response, response_json['Results']))
 
 
-		return JsonResponse({'status': 200, 'data': makes})
+		return JsonResponse({'status': 200, 'data': makes })
 	else: 
 		return JsonResponse({'status': 400, 'data': 'Cannot POST to /makes'})
 
@@ -119,7 +120,9 @@ def get_makes(request):
 def get_models(request):
 	if request.method == 'POST':
 		# makee initial request to nhtsa to find all models associated with a model year and make
-		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}/make/{}?format=json'.format(request.POST['year'], request.POST['make']))
+		parsedData = json.loads(request.body)
+
+		fetch_response = requests.get('https://one.nhtsa.gov/webapi/api/SafetyRatings/modelyear/{}/make/{}?format=json'.format(parsedData['year'], parsedData['make']))
 
 		response_json = fetch_response.json()
 		# only return the model names
