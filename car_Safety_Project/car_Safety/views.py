@@ -10,7 +10,7 @@ import json
 
 #returns the top ten cars with the highest aggregate score (cars which are already in the database)
 def top_ten_list(request):
-	all_cars = Car.objects.get.all()
+	all_cars = Car.objects.all()
 
 	# if the datbase only has 10 or less items
 	if len(all_cars) <= 10:
@@ -219,6 +219,8 @@ def get_vehicle_info(request):
 			# make request to iihs for full vehicle information based on slug name found above
 			iihs_info = requests.get('https://api.iihs.org/V4/ratings/single/{}/{}/{}/?apikey=uZBIc3DS8k6evZTw62xttB2dkklf-3ZCqVRpT6CCKP4&format=json'.format(nhtsa_info_json['Results'][0]['ModelYear'], nhtsa_info_json['Results'][0]['Make'].lower(), name_of_vehicle))
 
+			print('https://api.iihs.org/V4/ratings/single/{}/{}/{}/?apikey=uZBIc3DS8k6evZTw62xttB2dkklf-3ZCqVRpT6CCKP4&format=json'.format(nhtsa_info_json['Results'][0]['ModelYear'], nhtsa_info_json['Results'][0]['Make'].lower(), name_of_vehicle))
+
 			iihs_info_json = iihs_info.json()
 
 
@@ -276,7 +278,7 @@ def get_vehicle_info(request):
 						car= car_instance,
 						manufacturer= nhtsa_recall_json['Results'][i]['Manufacturer'],
 						component= nhtsa_recall_json['Results'][i]['Component'],
-						consequence= nhtsa_recall_json['Results'][i]['Consequence'],
+						consequence= nhtsa_recall_json['Results'][i]['Conequence'],
 						summary= nhtsa_recall_json['Results'][i]['Summary'],
 						remedy= nhtsa_recall_json['Results'][i]['Remedy'],
 						notes= nhtsa_recall_json['Results'][i]['Notes'],
@@ -294,6 +296,10 @@ def get_vehicle_info(request):
 			# -------------------SAVING RECALL MODEL---------------------- #
 			# -------------------SAVING IIHS MODEL------------------------ #
 
+
+			################################################################
+			# Need to update to check if each test has been performed and save different actions based on that
+			# Save only the data set which has is_primary as true
 			iihs = IIHS(
 					car= car_instance,
 					iihs_id= iihs_info_json[0]['id'],
@@ -301,49 +307,147 @@ def get_vehicle_info(request):
 					model_year= iihs_info_json[0]['modelYear'],
 					make= iihs_info_json[0]['make']['name'],
 					model= iihs_info_json[0]['name'],
-					class_name= iihs_info_json[0]['class']['name'],
-					top_safety_pick= iihs_info_json[0]['topSafetyPick']['isTopSafetyPickPlus'],
-					tsp_year= iihs_info_json[0]['topSafetyPick']['tspYear'],
-					tsp_is_qualified= iihs_info_json[0]['topSafetyPick']['isQualified'],
-					tsp_built_after= iihs_info_json[0]['topSafetyPick']['builtAfter'],
-					tsp_qualifying_text= iihs_info_json[0]['topSafetyPick']['qualifyingText'],
-					frmo_qualifying_text= iihs_info_json[0]['frontalRatingsModerateOverlap'][0]['qualifyingText'],
-					frmo_built_before= iihs_info_json[0]['frontalRatingsModerateOverlap'][0]['builtBefore'],
-					frmo_built_after= iihs_info_json[0]['frontalRatingsModerateOverlap'][0]['builtAfter'],
-					frmo_overall_rating= iihs_info_json[0]['frontalRatingsModerateOverlap'][0]['overallRating'],
-					frso_qualifying_text= iihs_info_json[0]['frontalRatingsSmallOverlap'][0]['qualifyingText'],
-					frso_built_before= iihs_info_json[0]['frontalRatingsSmallOverlap'][0]['builtBefore'],
-					frso_built_after= iihs_info_json[0]['frontalRatingsSmallOverlap'][0]['builtAfter'],
-					frso_overall_rating= iihs_info_json[0]['frontalRatingsSmallOverlap'][0]['overallRating'],
-					frsop_qualifying_text= iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][0]['qualifyingText'],
-					frsop_built_before= iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][0]['builtBefore'],
-					frsop_built_after= iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][0]['builtAfter'],
-					frsop_overall_rating= iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][0]['overallRating'],
-					sr_qualifying_text= iihs_info_json[0]['sideRatings'][0]['qualifyingText'],
-					sr_built_before= iihs_info_json[0]['sideRatings'][0]['builtBefore'],
-					sr_built_after= iihs_info_json[0]['sideRatings'][0]['builtAfter'],
-					sr_overall_rating= iihs_info_json[0]['sideRatings'][0]['overallRating'], 
-					rollover_qualifying_text= iihs_info_json[0]['rolloverRatings'][0]['qualifyingText'],
-					rollover_built_before= iihs_info_json[0]['rolloverRatings'][0]['builtBefore'],
-					rollover_built_after= iihs_info_json[0]['rolloverRatings'][0]['builtAfter'],
-					rollover_overall_rating= iihs_info_json[0]['rolloverRatings'][0]['overallRating'],
-					rear_qualifying_text= iihs_info_json[0]['rearRatings'][0]['qualifyingText'],
-					rear_built_before= iihs_info_json[0]['rearRatings'][0]['builtBefore'], 
-					rear_built_after= iihs_info_json[0]['rearRatings'][0]['builtAfter'],
-					rear_overall_rating= iihs_info_json[0]['rearRatings'][0]['overallRating'],
-					fcpr_qualifying_text= iihs_info_json[0]['frontCrashPreventionRatings'][0]['qualifyingText'],
-					fcpr_built_before= iihs_info_json[0]['frontCrashPreventionRatings'][0]['builtBefore'],
-					fcpr_built_after= iihs_info_json[0]['frontCrashPreventionRatings'][0]['builtAfter'],
-					fcpr_total_points= iihs_info_json[0]['frontCrashPreventionRatings'][0]['overallRating']['totalPoints'],
-					fcpr_rating_text= iihs_info_json[0]['frontCrashPreventionRatings'][0]['overallRating']['ratingText']
-				)
+					class_name= iihs_info_json[0]['class']['name']
+			)
+			iihs.save()
+
+
+			# -------------------TOP SAFETY PICK------------------------ #
+			if iihs_info_json[0]['topSafetyPick'] == None:
+				iihs.top_safety_pick= None
+				iihs.tsp_year= None
+				iihs.tsp_built_after= None
+				iihs.tsp_qualifying_text= None
+
+			else:
+				iihs.top_safety_pick= iihs_info_json[0]['topSafetyPick']['isTopSafetyPickPlus']
+				iihs.tsp_year= iihs_info_json[0]['topSafetyPick']['tspYear']
+				iihs.tsp_is_qualified= iihs_info_json[0]['topSafetyPick']['isQualified']
+				iihs.tsp_built_after= iihs_info_json[0]['topSafetyPick']['builtAfter']
+				iihs.tsp_qualifying_text= iihs_info_json[0]['topSafetyPick']['qualifyingText']
+
+
+			# -------------------Frontal Ratings Moderate Overlap------------------------ #
+			if iihs_info_json[0]['frontalRatingsModerateOverlap'] == None:
+				iihs.frmo_qualifying_text= None
+				iihs.frmo_built_before= None
+				iihs.frmo_built_after= None
+				iihs.frmo_overall_rating= None
+			else: 
+				for i in range(0, len(iihs_info_json[0]['frontalRatingsModerateOverlap'])):
+					if iihs_info_json[0]['frontalRatingsModerateOverlap'][i]['isPrimary']:
+						iihs.frmo_qualifying_text= iihs_info_json[0]['frontalRatingsModerateOverlap'][i]['qualifyingText']
+						iihs.frmo_built_before= iihs_info_json[0]['frontalRatingsModerateOverlap'][i]['builtBefore']
+						iihs.frmo_built_after= iihs_info_json[0]['frontalRatingsModerateOverlap'][i]['builtAfter']
+						iihs.frmo_overall_rating= iihs_info_json[0]['frontalRatingsModerateOverlap'][i]['overallRating']
+
+
+			# -------------------Frontal Ratings Small Overlap------------------------ #
+			if iihs_info_json[0]['frontalRatingsSmallOverlap'] == None:
+				frso_qualifying_text= None
+				frso_built_before= None
+				frso_built_after= None
+				frso_overall_rating= None
+			else: 
+				for i in range(0, len(iihs_info_json[0]['frontalRatingsSmallOverlap'])):
+					if iihs_info_json[0]['frontalRatingsSmallOverlap'][i]['isPrimary']:
+						iihs.frso_qualifying_text= iihs_info_json[0]['frontalRatingsSmallOverlap'][i]['qualifyingText']
+						iihs.frso_built_before= iihs_info_json[0]['frontalRatingsSmallOverlap'][i]['builtBefore']
+						iihs.frso_built_after= iihs_info_json[0]['frontalRatingsSmallOverlap'][i]['builtAfter']
+						iihs.frso_overall_rating= iihs_info_json[0]['frontalRatingsSmallOverlap'][i]['overallRating']
+
+
+			# -------------------Frontal Ratings Small Overlap Passenger------------------------ #
+			if iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'] == None:
+				iihs.frsop_qualifying_text= None
+				iihs.frsop_built_before= None
+				iihs.frsop_built_after= None
+				iihs.frsop_overall_rating= None
+			else: 
+				for i in range(0, len(iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'])):
+					if iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][i]['isPrimary']:
+						iihs.frsop_qualifying_text= iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][0]['qualifyingText']
+						iihs.frsop_built_before= iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][0]['builtBefore']
+						iihs.frsop_built_after= iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][0]['builtAfter']
+						iihs.frsop_overall_rating= iihs_info_json[0]['frontalRatingsSmallOverlapPassenger'][0]['overallRating']
+
+
+			# -------------------Side Ratings------------------------ #
+			if iihs_info_json[0]['sideRatings'] == None:
+				iihs.sr_qualifying_text= None
+				iihs.sr_built_before= None
+				iihs.sr_built_after= None
+				iihs.sr_overall_rating= None
+			else:
+				for i in range(0, len(iihs_info_json[0]['sideRatings'])):
+					if iihs_info_json[0]['sideRatings'][i]['isPrimary']:
+						iihs.sr_qualifying_text= iihs_info_json[0]['sideRatings'][0]['qualifyingText']
+						iihs.sr_built_before= iihs_info_json[0]['sideRatings'][0]['builtBefore']
+						iihs.sr_built_after= iihs_info_json[0]['sideRatings'][0]['builtAfter']
+						iihs.sr_overall_rating= iihs_info_json[0]['sideRatings'][0]['overallRating']
+
+
+			# -------------------Rollover Ratings------------------------ #
+			if iihs_info_json[0]['rolloverRatings'] == None:
+					iihs.rollover_qualifying_text= None
+					iihs.rollover_built_before= None
+					iihs.rollover_built_after= None
+					iihs.rollover_overall_rating= None
+			else:
+				for i in range(0, len(iihs_info_json[0]['rolloverRatings'])):
+					if iihs_info_json[0]['rolloverRatings'][i]['isPrimary']:
+						iihs.rollover_qualifying_text= iihs_info_json[0]['rolloverRatings'][0]['qualifyingText']
+						iihs.rollover_built_before= iihs_info_json[0]['rolloverRatings'][0]['builtBefore']
+						iihs.rollover_built_after= iihs_info_json[0]['rolloverRatings'][0]['builtAfter']
+						iihs.rollover_overall_rating= iihs_info_json[0]['rolloverRatings'][0]['overallRating']
+
+
+			# -------------------Rear Ratings------------------------ #
+			if iihs_info_json[0]['rearRatings'] == None:
+				iihs.rear_qualifying_text= None
+				iihs.rear_built_before= None
+				iihs.rear_built_after= None
+				iihs.rear_overall_rating= None
+			else:
+				for i in range(0, len(iihs_info_json[0]['rearRatings'])):
+					if iihs_info_json[0]['rearRatings'][i]['isPrimary']:
+						iihs.rear_qualifying_text= iihs_info_json[0]['rearRatings'][0]['qualifyingText']
+						iihs.rear_built_before= iihs_info_json[0]['rearRatings'][0]['builtBefore']
+						iihs.rear_built_after= iihs_info_json[0]['rearRatings'][0]['builtAfter']
+						iihs.rear_overall_rating= iihs_info_json[0]['rearRatings'][0]['overallRating']
+
+
+			# -------------------Rear Ratings------------------------ #
+			if iihs_info_json[0]['rearRatings'] == None:
+					iihs.fcpr_qualifying_text= None
+					iihs.fcpr_built_before= None
+					iihs.fcpr_built_after= None
+					iihs.fcpr_total_points= None
+					iihs.fcpr_rating_text= None
+			else:
+				for i in range(0, len(iihs_info_json[0]['frontCrashPreventionRatings'])):
+					if iihs_info_json[0]['frontCrashPreventionRatings'][i]['isPrimary']:
+						iihs.fcpr_qualifying_text= iihs_info_json[0]['frontCrashPreventionRatings'][0]['qualifyingText']
+						iihs.fcpr_built_before= iihs_info_json[0]['frontCrashPreventionRatings'][0]['builtBefore']
+						iihs.fcpr_built_after= iihs_info_json[0]['frontCrashPreventionRatings'][0]['builtAfter']
+						iihs.fcpr_total_points= iihs_info_json[0]['frontCrashPreventionRatings'][0]['overallRating']['totalPoints']
+						iihs.fcpr_rating_text= iihs_info_json[0]['frontCrashPreventionRatings'][0]['overallRating']['ratingText']
 
 			iihs.save()
 
+
+
 			# -------------------SAVING IIHS MODEL------------------------ #
 
+			car_serialized1 = serializers.serialize('json', [car_instance])
+			iihs_serialized1 = serializers.serialize('json', [iihs])
+			recall_serialized1 = serializers.serialize('json', all_recalls)
 
-			return JsonResponse({'status': 200, 'data': {'nhtsa': [nhtsa_info_json['Results'][0]], 'recall': nhtsa_recall_json['Results'], 'iihs': [iihs_info_json[0]]}})
+			car_serialized = json.loads(car_serialized1)
+			iihs_serialized = json.loads(iihs_serialized1)
+			recall_serialized = json.loads(recall_serialized1)
+
+			return JsonResponse({'status': 200, 'data': {'nhtsa': car_serialized, 'recall': recall_serialized, 'iihs': iihs_serialized}})
 
 
 		else: 
@@ -351,8 +455,6 @@ def get_vehicle_info(request):
 			# vehicle was found in the database
 			iihs = IIHS.objects.get(car=car_nhtsa)
 			recall = Recall.objects.filter(car=car_nhtsa)
-
-
 
 
 			car_serialized1 = serializers.serialize('json', [car_nhtsa])
