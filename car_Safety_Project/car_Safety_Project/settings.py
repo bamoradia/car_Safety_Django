@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'car_Safety',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -80,22 +81,34 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
+    'https://car-safety.herokuapp.com',
 )
 
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'car_safety',
+#         'USER': 'carsafetyadmin',
+#         'PASSWORD': 'funkyducks',
+#         'HOST': 'localhost'
+#     }
+# }
+
+# setting up database on heroku
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'car_safety',
-        'USER': 'carsafetyadmin',
-        'PASSWORD': 'funkyducks',
-        'HOST': 'localhost'
+        'NAME': 'ddkqpjq9d5vn7m',
+        'USER': 'lkrpfinygpwast',
+        'PASSWORD': 'd471a52b252c22756b2b36de58b5436f495b7b394dc32fda9ff1458436d70fe7',
+        'HOST': 'ec2-54-163-246-5.compute-1.amazonaws.com',
+        'PORT': 5432,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
