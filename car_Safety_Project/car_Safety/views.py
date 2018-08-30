@@ -6,25 +6,44 @@ from django.core import serializers
 import requests
 import json
 
+def filterCars(IIHS_input):
+	if IIHS_input.top_safety_pick == 'True':
+		return IIHS_input
+
+
+
+
 
 #returns the top ten cars with the highest aggregate score (cars which are already in the database)
-def top_ten_list(request):
-	all_cars = Car.objects.all()
+def top_safety(request):
+	all_IIHS_cars = IIHS.objects.all()
 
-	# if the datbase only has 10 or less items
-	if len(all_cars) <= 10:
-		top_ten = all_cars
-	else: 
-		# will need to sort by safety score and save the top ten in top_ten
+	top_safety_picks = list(filter(filterCars, all_IIHS_cars))
 
-		top_ten = 'THIS NEEDS TO BE DONE'
+	car_nhtsa = []
+	recall = []
 
 
-	# after the top_ten list is made, need to find the associated recalls for each of the top ten as well as the IIHS car information and consolidate the information
+	for i in range(0, len(top_safety_picks)):
+		found_car = Car.objects.get(vehicle_description=top_safety_picks[i].vehicle_description)
+		car_recall = Recall.objects.filter(car=found_car)
+		recall_serialized = serializers.serialize('json', car_recall)
+		car_nhtsa.append(found_car)
+		recall.append(recall_serialized)
 
+	car_serialized1 = serializers.serialize('json', car_nhtsa)
+	iihs_serialized1 = serializers.serialize('json', top_safety_picks)
+	# recall_serialized1 = serializers.serialize('json', recall)
 
+	# print('this is the serialized recall', recall[0])
 
-	return JsonResponse({'status': 200, 'data': 'This is the test to get the top_ten_list of cars'})
+	car_serialized = json.loads(car_serialized1)
+	iihs_serialized = json.loads(iihs_serialized1)
+	# recall_serialized = json.loads(recall_serialized1)
+
+	# return JsonResponse({'status': 200, 'data': {'iihs':iihs_serialized, 'nhtsa': car_serialized}})
+
+	return JsonResponse({'status': 200, 'data': {'nhtsa': car_serialized, 'recall': recall, 'iihs': iihs_serialized}})
 
 
 
