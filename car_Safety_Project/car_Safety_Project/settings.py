@@ -28,7 +28,8 @@ SECRET_KEY = 'mw4$ue*g^zbi61plzvoq59+bn!k(*4wg$n^15ca8cyrj@4d%i9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['car-safety.herokuapp.com', '127.0.0.1:3000', 'localhost']
+ALLOWED_HOSTS = ['https://car-safety.herokuapp.com', '127.0.0.1:3000', 'localhost']
+
 
 
 # Application definition
@@ -76,7 +77,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'car_Safety_Project.wsgi.application'
 
 
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
