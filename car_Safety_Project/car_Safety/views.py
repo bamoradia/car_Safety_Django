@@ -33,15 +33,9 @@ def top_safety(request):
 
 	car_serialized1 = serializers.serialize('json', car_nhtsa)
 	iihs_serialized1 = serializers.serialize('json', top_safety_picks)
-	# recall_serialized1 = serializers.serialize('json', recall)
-
-	# print('this is the serialized recall', recall[0])
 
 	car_serialized = json.loads(car_serialized1)
 	iihs_serialized = json.loads(iihs_serialized1)
-	# recall_serialized = json.loads(recall_serialized1)
-
-	# return JsonResponse({'status': 200, 'data': {'iihs':iihs_serialized, 'nhtsa': car_serialized}})
 
 	return JsonResponse({'status': 200, 'data': {'nhtsa': car_serialized, 'recall': recall, 'iihs': iihs_serialized}})
 
