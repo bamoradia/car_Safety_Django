@@ -28,7 +28,7 @@ SECRET_KEY = 'mw4$ue*g^zbi61plzvoq59+bn!k(*4wg$n^15ca8cyrj@4d%i9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['car-safety.herokuapp.com', '127.0.0.1:3000', 'localhost', 'safe-headland-53598.herokuapp.com', 'https://car-safety.herokuapp.com']
+ALLOWED_HOSTS = ['car-safety.herokuapp.com', '127.0.0.1:3000', 'localhost', 'https://car-safety.herokuapp.com', 'boiling-harbor-89487.herokuapp.com']
 
 
 # Application definition
